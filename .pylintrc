@@ -1,0 +1,6 @@
+[BASIC]
+good-names=i,j,k,l,v,k,o
+no-docstring-rgx=^.*test.*_
+
+[MESSAGES CONTROL]
+disable=wrong-import-position
