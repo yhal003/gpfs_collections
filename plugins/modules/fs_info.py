@@ -11,7 +11,7 @@ TODO: Provide return
 '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.nesi.gpfs.plugins.module_utils.fs import text2table
+from ansible_collections.nesi.gpfs.plugins.module_utils.fs import FS
 
 def argument_spec():
     return dict(
@@ -21,8 +21,15 @@ def argument_spec():
 def main():
     module = AnsibleModule(argument_spec=argument_spec(), 
                           supports_check_mode=True)
-    module.exit_json(changed=True, fs_info = {})
-
+    name = module.params["name"]
+    try:
+        module.exit_json(changed=False, fs_info = FS(name)._dict_)
+    except IndexError:
+        module.fail_json(msg=f"filesystem {name} not found")
+    except ValueError:
+        module.fail_json(msg=f"{name} is not a valid filesystem name")
+    except Exception as e:
+        module.fail_json(msg="fs_info failed", exception = e)
 
 if __name__ == '__main__':
     main()
