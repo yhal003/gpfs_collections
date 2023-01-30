@@ -72,12 +72,40 @@ class FS:
             setattr(self, key, value)
 
 class Fileset:
+
+    @staticmethod
+    def create(cls, filesystem, name, 
+        allow_permission_change = "chmodAndSetAcl",
+        allow_permission_inherit = "inheritAclOnly",
+        comment = None):
+
+        command = ["/usr/lpp/mmfs/bin/mmcrfileset", 
+                    filesystem, 
+                    name,
+                    "--allow-permission-change", allow_permission_change,
+                    "--allow-permission-inherit", allow_permission_inherit]
+        if comment is not None:
+            command += ["-t", comment]
+        
+        cmd = subprocess.run(command, 
+                             check = False,
+                             stdout = subprocess.PIPE,
+                             stderr = subprocess.PIPE)
+        
+        if cmd.returncode > 0:
+            raise Exception(cmd.stderr.decode())
+        return Fileset(filesystem, name)
+
     def __init__(self, filesystem, name):
         mmlsfileset = subprocess.run(["/usr/lpp/mmfs/bin/mmlsfileset",
                                  filesystem,name,"-Y"],
-                                check=True,
+                                check=False,
                                 stdout = subprocess.PIPE,
                                 stderr = subprocess.PIPE)
+        if mmlsfileset.returncode > 0:
+            not_found = f"Fileset named {name} does not exist"
+            if not_found in mmlsfileset.stderr.decode():
+                raise IndexError(not_found)
         properties = text2table(mmlsfileset.stdout.decode())[""][0]
         for (k,v) in properties.items():
             try:

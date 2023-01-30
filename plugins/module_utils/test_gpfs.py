@@ -171,4 +171,12 @@ def test_fileset(mocker):
                                                "utf-8")
     fileset = Fileset("fs","fileset_name")
 
-    assert fileset.filesetName == "fileset_name"
+    assert fileset.filesetName == "fileset_name" 
+
+def test_nonexistent_fileset(mocker):
+    mocker.patch("subprocess.run")  
+    subprocess.run.return_value.returncode = 22
+    subprocess.run.return_value.stderr = ("Fileset named fset does not exist.\n"
+                                           "mmlsfileset: Command failed. Examine previous error messages to determine cause.\n").encode()
+    with pytest.raises(IndexError):
+        Fileset("fs","fset")
