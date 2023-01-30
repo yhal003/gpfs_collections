@@ -20,7 +20,8 @@ def argument_spec():
         filesystem = dict(type='str', required=True),
         path       = dict(type='str', required=False),
         comment    = dict(type='str', required=False),
-        state      = dict(type='str', default='present', 
+        unlink     = dict(type='boolean', default=False),
+        state      = dict(type='str', default='present',
                           choices=['present', 'absent']),
         allow_permission_change = dict(type = 'str',
                                        default = 'chmodAndSetAcl',
@@ -53,6 +54,7 @@ def ensure(module, existing_fileset):
     filesystem = module.params["filesystem"]
     name = module.params["name"]
     path  = module.params.get("path", None)
+    unlink = module.params["unlink"]
 
     changed = False
     if (permChangeFlag != existing_fileset.permChangeFlag or
@@ -74,26 +76,36 @@ def ensure(module, existing_fileset):
         Fileset.link(filesystem, name, path)
         changed = True
 
+    if (unlink and existing_fileset.status == "Linked"):
+        Fileset.unlink(filesystem, name)
+
     return changed
 
 def main():
     module = AnsibleModule(argument_spec=argument_spec(),
-                          supports_check_mode=True)
+                           supports_check_mode=True)
     name = module.params["name"]
     filesystem = module.params["filesystem"]
     state = module.params["state"]
+    path = module.params.get("path",None)
+    unlink = module.params["unlink"]
+
+    if (unlink and path is not None):
+        module.fail_json(msg="path cannot be set when unlink is true")
 
     try:
         existing_fileset = Fileset(filesystem, name)
-        if (state == "present"):
+        if state == "present":
             changed = ensure(module, existing_fileset)
             module.exit_json(changed=changed)
         else:
+            if (unlink and existing_fileset.status == "Linked"):
+                Fileset.unlink(filesystem, name)
             delete_fileset(module)
             module.exit_json(changed=True)
 
     except IndexError:
-        if (state == "absent"):
+        if state == "absent":
             module.exit_json(changed=False)
         else:
             fset = create_fileset(module)
