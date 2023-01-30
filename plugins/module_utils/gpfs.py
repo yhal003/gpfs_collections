@@ -75,7 +75,7 @@ class Fileset:
     def __init__(self, filesystem, name):
         mmlsfileset = subprocess.run(["/usr/lpp/mmfs/bin/mmlsfileset",
                                  filesystem,name,"-Y"],
-                                check=False, 
+                                check=True,
                                 stdout = subprocess.PIPE,
                                 stderr = subprocess.PIPE)
         properties = text2table(mmlsfileset.stdout.decode())[""][0]
