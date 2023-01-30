@@ -78,8 +78,8 @@ class Fileset:
                                 check=False, 
                                 stdout = subprocess.PIPE,
                                 stderr = subprocess.PIPE)
-        properties = text2table(mmlsfileset.stdout.decode())[""]
-        for (k,v) in properies.items():
+        properties = text2table(mmlsfileset.stdout.decode())[""][0]
+        for (k,v) in properties.items():
             try:
                 v = int(v)
             except ValueError:

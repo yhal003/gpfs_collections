@@ -154,3 +154,21 @@ def test_cluster(mocker):
     assert len(cluster.nodes) ==  1
     assert cluster.nodes[0].ipAddress == "1.1.1.1"
     assert cluster.nodes[0].designation == "quorumManager"
+
+# test filesets
+
+from gpfs import Fileset
+
+MMLSFILESET_HEADER = """mmlsfileset::HEADER:version:reserved:reserved:filesystemName:filesetName:id:rootInode:status:path:parentId:created:inodes:dataInKB:comment:filesetMode:afmTarget:afmState:afmMode:afmFileLookupRefreshInterval:afmFileOpenRefreshInterval:afmDirLookupRefreshInterval:afmDirOpenRefreshInterval:afmAsyncDelay:afmNeedsRecovery:afmExpirationTimeout:afmRPO:afmLastPSnapId:inodeSpace:isInodeSpaceOwner:maxInodes:allocInodes:inodeSpaceMask:afmShowHomeSnapshots:afmNumReadThreads:reserved:afmReadBufferSize:afmWriteBufferSize:afmReadSparseThreshold:afmParallelReadChunkSize:afmParallelReadThreshold:snapId:afmNumFlushThreads:afmPrefetchThreshold:afmEnableAutoEviction:permChangeFlag:afmParallelWriteThreshold:freeInodes:afmNeedsResync:afmParallelWriteChunkSize:afmNumWriteThreads:afmPrimaryID:afmDRState:afmAssociatedPrimaryId:afmDIO:afmGatewayNode:afmIOFlags:afmVerifyDmapi:afmSkipHomeACL:afmSkipHomeMtimeNsec:afmForceCtimeChange:afmSkipResyncRecovery:afmSkipConflictQDrop:afmRefreshAsync:afmParallelMounts:afmRefreshOnce:afmSkipHomeCtimeNsec:afmReaddirOnce:afmResyncVer2:afmSnapUncachedRead:afmFastCreate:afmObjectXattr:afmObjectVHB:afmObjectNoDirectoryObj:afmSkipHomeRefresh:afmObjectGCS:afmObjectUserKeys:afmWriteOnClose:afmObjectSSL:afmObjectACL:afmMUPromoted:afmMUAutoRemove:afmObjFastReaddir:afmObjectBlkIO:preventSnapshotRestore:permInheritFlag:afmIOFlags2:afmRemoteUpdate:falStatus:"""
+
+def test_fileset(mocker):
+    mocker.patch("subprocess.run")
+    subprocess.run.return_value.returncode = 0
+    mmlsfileset_data = "mmlsfileset::0:1:::fs1:fileset_name:10:65828:Linked:%2Fa%5Fb%2Fc:0:Wed Dec 14 14%3A17%3A55 2022:-:-:fset_name:off:-:-:-:-:-:-:-:-:-:-:-:-:0:0:0:0:0:-:-:-:-:-:-:-:-:0:-:-:-:chmodAndUpdateAcl:-:0:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:no:inheritAclAndAddMode:-:-:default:"
+
+    subprocess.run.return_value.stdout = bytes(
+                                               MMLSFILESET_HEADER + "\n" + mmlsfileset_data,
+                                               "utf-8")
+    fileset = Fileset("fs","fileset_name")
+
+    assert fileset.filesetName == "fileset_name"
