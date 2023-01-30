@@ -30,11 +30,11 @@ class FS:
                                 stderr = subprocess.PIPE)
         
         if mmlsfs.returncode > 0:
-            if "is not known to the GPFS cluster" in mmlsfs.stderr:
+            if "is not known to the GPFS cluster" in mmlsfs.stderr.decode():
                 raise IndexError(f"{name} filesystem not found")
             else:
-                raise Exception(mmlsfs.stderr)
-        properties = text2table(mmlsfs.stdout)[""]
+                raise Exception(mmlsfs.stderr.decode())
+        properties = text2table(mmlsfs.stdout.decode())[""]
         for p in properties:
             key = p["fieldName"]
             try:

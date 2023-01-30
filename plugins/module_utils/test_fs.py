@@ -84,7 +84,9 @@ def test_fs_simple(mocker):
     #mocker.patch("subprocess.CompletedProcess")
     mmlsfs_data = ("mmlsfs::0:1:::fs1:minFragmentSize:8192::\n"
                    "mmlsfs::0:1:::fs1:inodeSize:4096::\n")
-    subprocess.run.return_value.stdout = MMLSFS_HEADER + "\n" + mmlsfs_data
+    subprocess.run.return_value.stdout = bytes(
+                                               MMLSFS_HEADER + "\n" + mmlsfs_data,
+                                               "utf-8")
     subprocess.run.return_value.returncode = 0
     fs = FS("fs1")
     args = subprocess.run.call_args[0]
@@ -98,7 +100,7 @@ def test_fs_dont_exist(mocker):
     subprocess.run.return_value.returncode = 1
     msg = ("mmlsfs: File system i_dont_exist is not known to the GPFS cluster.\n"
            "mmlsfs: Command failed. Examine previous error messages to determine cause.\n")
-    subprocess.run.return_value.stderr = msg
+    subprocess.run.return_value.stderr = bytes(msg, "utf-8")
 
     with pytest.raises(IndexError):
         fs = FS("i_dont_exist")
