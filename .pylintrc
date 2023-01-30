@@ -1,5 +1,5 @@
 [BASIC]
-good-names=i,j,k,l,v,k,o,p
+good-names=i,j,k,l,v,k,o,p,e
 no-docstring-rgx=^.*test.*_
 
 [MESSAGES CONTROL]
