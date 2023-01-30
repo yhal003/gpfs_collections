@@ -4,8 +4,10 @@ def text2table(text):
 
     headers = {}
     results = {}
-    for l in text.split():
+    for l in text.split("\n"):
         values = l.split(":")
+        if len(values) < 3:
+            continue
         header_name = values[1]
         if values[2] == "HEADER":
             headers[header_name] = values[3:]
@@ -14,6 +16,8 @@ def text2table(text):
             current_header = headers[header_name]
             current_values = values[3:]
             new_row = dict(zip(current_header, current_values))
+            if "" in new_row:
+                del new_row[""] # we don't need empty keys
             results[header_name] += [new_row]
 
     return results

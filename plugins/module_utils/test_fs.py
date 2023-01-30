@@ -21,6 +21,27 @@ def test_simple_value():
     o = text2table(i)
     assert o == {"header": [{"key":"value"}]}
 
+# gpfs puts one extra : at the end, we need to ignore that
+def test_empty_header_value():
+    i = ("command:header:HEADER:key:\n"
+         "command:header::value:")
+    o = text2table(i)
+    assert o == {"header": [{"key":"value"}]}
+
+def test_spaces_in_values():
+    i = ("command:header:HEADER:key\n"
+         "command:header::value with spaces")
+    o = text2table(i)
+    assert o == {"header": [{"key":"value with spaces"}]}
+
+def test_ignore_endlines():
+    i = ("command:header:HEADER:key\n"
+         "command:header::value\n"
+         "\n"
+         "\n")
+    o = text2table(i)
+    assert o == {"header": [{"key":"value"}]}    
+
 def test_two_rows():
     i = ("command:header:HEADER:key\n"
          "command:header::value1\n"
