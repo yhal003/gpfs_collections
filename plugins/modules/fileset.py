@@ -20,7 +20,7 @@ def argument_spec():
         filesystem = dict(type='str', required=True),
         path       = dict(type='str', required=False),
         comment    = dict(type='str', required=False),
-        unlink     = dict(type='boolean', default=False),
+        unlink     = dict(type='bool', default=False),
         state      = dict(type='str', default='present',
                           choices=['present', 'absent']),
         allow_permission_change = dict(type = 'str',
