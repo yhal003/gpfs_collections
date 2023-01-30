@@ -74,6 +74,19 @@ class FS:
 class Fileset:
 
     @staticmethod
+    def delete(filesystem, name):
+        cmd = subprocess.run(["/usr/lpp/mmfs/bin/mmdelfileset",
+                              filesystem,
+                              name],
+                             check = False,
+                             stdout = subprocess.PIPE,
+                             stderr = subprocess.PIPE)
+
+        if cmd.returncode > 0:
+            raise Exception(cmd.stderr.decode())
+        return
+
+    @staticmethod
     def _create_or_update(executable, filesystem, name, 
         allow_permission_change = "chmodAndSetAcl",
         allow_permission_inherit = "inheritAclOnly",

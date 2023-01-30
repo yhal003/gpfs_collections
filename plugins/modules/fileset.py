@@ -33,7 +33,7 @@ def argument_spec():
     )
 
 def delete_fileset(module):
-    pass
+    Fileset.delete(module.params["filesystem"], module.params["name"])
 
 def create_fileset(module):
     return Fileset.create(name = module.params["name"],
@@ -63,7 +63,7 @@ def ensure(module, existing_fileset):
     return False
 
 def main():
-    module = AnsibleModule(argument_spec=argument_spec(), 
+    module = AnsibleModule(argument_spec=argument_spec(),
                           supports_check_mode=True)
     name = module.params["name"]
     filesystem = module.params["filesystem"]

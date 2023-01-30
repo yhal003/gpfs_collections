@@ -1,5 +1,16 @@
 {
     "cSpell.words": [
         "MMLSFS"
+    ],
+
+    "cSpell.languageSettings": [
+        // This one works with python
+        {
+            "languageId": "python",
+            "includeRegExpList": [
+                "/#.*/",
+                "/('''|\"\"\")[^\\1]+?\\1/g"
+            ]
+        }
     ]
 }
