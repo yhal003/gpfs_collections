@@ -10,6 +10,7 @@ RETURN=r'''
 TODO: Provide return
 '''
 
+import traceback
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.nesi.gpfs.plugins.module_utils.fs import FS
 
@@ -24,14 +25,15 @@ def main():
     name = module.params["name"]
     try:
         module.exit_json(changed=False, fs_info = FS(name)._dict_)
-    except IndexError as e:
+    except IndexError:
         module.fail_json(msg=f"filesystem {name} not found",
-                         exception = e)
-    except ValueError as e:
+                         exception = traceback.format_exc())
+    except ValueError:
         module.fail_json(msg=f"{name} is not a valid filesystem name",
-                         exception= e)
-    except Exception as e: # pylint: disable=broad-except
-        module.fail_json(msg="fs_info failed", exception = e)
+                         exception= traceback.format_exc())
+    except Exception: # pylint: disable=broad-except
+        module.fail_json(msg="fs_info failed",
+                         exception = traceback.format_exc())
 
 if __name__ == '__main__':
     main()
