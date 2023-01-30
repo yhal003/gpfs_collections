@@ -36,8 +36,8 @@ def delete_fileset(module):
     pass
 
 def create_fileset(module):
-    return Fileset.create(module.params["name"],
-                          module.params["filesystem"],
+    return Fileset.create(name = module.params["name"],
+                          filesystem = module.params["filesystem"],
                           comment = module.params.get("comment",None),
                           allow_permission_change = 
                             module.params["allow_permission_change"],
