@@ -1,4 +1,5 @@
 import subprocess
+from types import SimpleNamespace
 
 def text2table(text):
 
@@ -21,6 +22,29 @@ def text2table(text):
             results[header_name] += [new_row]
 
     return results
+
+class Cluster:
+    def __init__(self):
+        mmlscluster = subprocess.run(["/usr/lpp/mmfs/bin/mmlscluster", "-Y"],
+                                     check=True, 
+                                     stdout = subprocess.PIPE,
+                                     stderr = subprocess.PIPE)
+        properties = text2table(mmlscluster.stdout.decode())
+        self._properties = properties
+
+    @property
+    def name(self):
+        return self._properties["clusterSummary"][0]["clusterName"]
+
+    @property
+    def nodes(self):
+        return [SimpleNamespace(**n)
+                for n in self._properties["clusterNode"]]
+
+    @property
+    def id(self):
+        return int(self._properties["clusterSummary"][0]["clusterId"])
+
 
 class FS:
     def __init__(self,name):
@@ -46,3 +70,19 @@ class FS:
             except ValueError:
                 value = p["data"]
             setattr(self, key, value)
+
+class Fileset:
+    def __init__(self, filesystem, name):
+        mmlsfs = subprocess.run(["/usr/lpp/mmfs/bin/mmlsfileset",
+                                 filesystem,name,"-Y"],
+                                check=False, 
+                                stdout = subprocess.PIPE,
+                                stderr = subprocess.PIPE)
+        properties = text2table(mmlsfs.stdout.decode())[""]
+        for (k,v) in properies[""].items():
+            try:
+                v = int(v)
+            except ValueError:
+                pass
+            setattr(self,k,v)
+            

@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import ANY
 import subprocess
-from fs import text2table
+from gpfs import text2table
 
 # text2table tests 
 
@@ -91,7 +91,7 @@ def test_headers_without_names():
 
 # filesystem tests
 
-from fs import FS
+from gpfs import FS
 
 def test_fs_reserved_name():
     with pytest.raises(ValueError):
@@ -125,3 +125,32 @@ def test_fs_dont_exist(mocker):
 
     with pytest.raises(IndexError):
         fs = FS("i_dont_exist")
+
+from gpfs import Cluster
+
+
+MMLSCLUSTER_HEADER = """mmlscluster:clusterSummary:HEADER:version:reserved:reserved:clusterName:clusterId:uidDomain:rshPath:rshSudoWrapper:rcpPath:rcpSudoWrapper:repositoryType:primaryServer:secondaryServer:
+mmlscluster:clusterNode:HEADER:version:reserved:reserved:nodeNumber:daemonNodeName:ipAddress:adminNodeName:designation:otherNodeRoles:adminLoginName:otherNodeRolesAlias:
+mmlscluster:cnfsSummary:HEADER:version:reserved:reserved:cnfsSharedRoot:cnfsMoundPort:cnfsNFSDprocs:cnfsReboot:cnfsMonitorEnabled:cnfsGanesha:
+mmlscluster:cnfsNode:HEADER:version:reserved:reserved:nodeNumber:daemonNodeName:ipAddress:cnfsState:cnfsGroupId:cnfsIplist:
+mmlscluster:cesSummary:HEADER:version:reserved:reserved:cesSharedRoot:EnabledServices:logLevel:addressPolicy:interfaceMode:
+mmlscluster:cesNode:HEADER:version:reserved:reserved:nodeNumber:daemonNodeName:ipAddress:cesGroup:cesState:cesIpList:
+mmlscluster:cloudGatewayNode:HEADER:version:reserved:reserved:nodeNumber:daemonNodeName:
+mmlscluster:commentNode:HEADER:version:reserved:reserved:nodeNumber:daemonNodeName:comment_enc:
+"""
+
+def test_cluster(mocker):
+    mocker.patch("subprocess.run")
+    subprocess.run.return_value.returncode = 0
+    mmlscluster_data = ("mmlscluster:clusterSummary:0:1:::name:123:domain:ssh:no:scp:no:CCR:s1:s2:\n"
+     "mmlscluster:clusterNode:0:1:::4:a02hgf01:1.1.1.1:s1:quorumManager::::")
+    subprocess.run.return_value.stdout = bytes(
+                                               MMLSCLUSTER_HEADER + "\n" + mmlscluster_data,
+                                               "utf-8")
+    cluster = Cluster()
+    assert cluster.name == "name"
+    assert cluster.id == 123
+
+    assert len(cluster.nodes) ==  1
+    assert cluster.nodes[0].ipAddress == "1.1.1.1"
+    assert cluster.nodes[0].designation == "quorumManager"
