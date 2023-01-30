@@ -45,6 +45,19 @@ def create_fileset(module):
                             module.params["allow_permission_inherit"])
 
 def ensure(module, existing_fileset):
+    permChangeFlag = module.params["allow_permission_change"] 
+    permInheritFlag = module.params["allow_permission_inherit"]
+    comment = module.params["comment"]
+    if (permChangeFlag != existing_fileset.permChangeFlag or
+        permInheritFlag != existing_fileset.permInheritFlag or
+        comment != existing_fileset.comment):
+        Fileset.update(existing_fileset.filesystem,
+                       existing_fileset.name,
+                       allow_permission_change = permChangeFlag,
+                       allow_permission_inherit = permInheritFlag,
+                       comment = comment)
+        return True
+
     return False
 
 def main():

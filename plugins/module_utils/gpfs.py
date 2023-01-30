@@ -74,13 +74,13 @@ class FS:
 class Fileset:
 
     @staticmethod
-    def create(filesystem, name, 
+    def _create_or_update(executable, filesystem, name, 
         allow_permission_change = "chmodAndSetAcl",
         allow_permission_inherit = "inheritAclOnly",
         comment = None):
 
-        command = ["/usr/lpp/mmfs/bin/mmcrfileset", 
-                    filesystem, 
+        command = [executable,
+                    filesystem,
                     name,
                     "--allow-permission-change", allow_permission_change,
                     "--allow-permission-inherit", allow_permission_inherit]
@@ -95,6 +95,35 @@ class Fileset:
         if cmd.returncode > 0:
             raise Exception(cmd.stderr.decode())
         return Fileset(filesystem, name)
+
+
+    @staticmethod
+    def create(filesystem, name, 
+        allow_permission_change = "chmodAndSetAcl",
+        allow_permission_inherit = "inheritAclOnly",
+        comment = None):
+        return Fileset._create_or_update("/usr/lpp/mmfs/bin/mmcrfileset",
+                                         filesystem, name,
+                                         comment=comment,
+                                         allow_permission_change=
+                                          allow_permission_change,
+                                         allow_permission_inherit=
+                                          allow_permission_inherit)
+
+    @staticmethod
+    def update(filesystem, name, 
+        allow_permission_change = "chmodAndSetAcl",
+        allow_permission_inherit = "inheritAclOnly",
+        comment = None):
+        return Fileset._create_or_update("/usr/lpp/mmfs/bin/mmchfileset",
+                                         filesystem, name,
+                                         comment=comment,
+                                         allow_permission_change=
+                                          allow_permission_change,
+                                         allow_permission_inherit=
+                                          allow_permission_inherit)
+
+    
 
     def __init__(self, filesystem, name):
         mmlsfileset = subprocess.run(["/usr/lpp/mmfs/bin/mmlsfileset",
