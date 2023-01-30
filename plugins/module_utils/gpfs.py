@@ -1,4 +1,5 @@
 import subprocess
+from urllib.parse import unquote
 from types import SimpleNamespace
 
 def text2table(text):
@@ -74,10 +75,25 @@ class FS:
 class Fileset:
 
     @staticmethod
+    def link(filesystem, name, path):
+        subprocess.run(["/usr/lpp/mmfs/bin/mmlinkfileset",
+                       filesystem, name, "-J", path],
+                       check = True,
+                       stdout = subprocess.PIPE,
+                       stderr = subprocess.PIPE)
+    
+    @staticmethod
+    def unlink(filesystem, name):
+        subprocess.run(["/usr/lpp/mmfs/bin/mmunlinkfileset",
+                       filesystem, name],
+                       check = True,
+                       stdout = subprocess.PIPE,
+                       stderr = subprocess.PIPE)       
+
+    @staticmethod
     def delete(filesystem, name):
         cmd = subprocess.run(["/usr/lpp/mmfs/bin/mmdelfileset",
-                              filesystem,
-                              name],
+                              filesystem, name],
                              check = False,
                              stdout = subprocess.PIPE,
                              stderr = subprocess.PIPE)
@@ -136,8 +152,6 @@ class Fileset:
                                          allow_permission_inherit=
                                           allow_permission_inherit)
 
-    
-
     def __init__(self, filesystem, name):
         mmlsfileset = subprocess.run(["/usr/lpp/mmfs/bin/mmlsfileset",
                                  filesystem,name,"-Y"],
@@ -154,5 +168,7 @@ class Fileset:
                 v = int(v)
             except ValueError:
                 pass
+            if k == "path":
+                v = unquote(v)
             setattr(self,k,v)
 

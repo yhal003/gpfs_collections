@@ -18,8 +18,10 @@ def argument_spec():
     return dict(
         name       = dict(type='str', required=True),
         filesystem = dict(type='str', required=True),
-        comment = dict(type='str', required=False),
-        state=dict(type='str', default='present', choices=['present', 'absent']),
+        path       = dict(type='str', required=False),
+        comment    = dict(type='str', required=False),
+        state      = dict(type='str', default='present', 
+                          choices=['present', 'absent']),
         allow_permission_change = dict(type = 'str',
                                        default = 'chmodAndSetAcl',
                                        choices = ['chmodAndSetAcl',
@@ -50,6 +52,9 @@ def ensure(module, existing_fileset):
     comment = module.params["comment"]
     filesystem = module.params["filesystem"]
     name = module.params["name"]
+    path  = module.params.get("path", None)
+
+    changed = False
     if (permChangeFlag != existing_fileset.permChangeFlag or
         permInheritFlag != existing_fileset.permInheritFlag or
         comment != existing_fileset.comment):
@@ -58,9 +63,18 @@ def ensure(module, existing_fileset):
                        allow_permission_change = permChangeFlag,
                        allow_permission_inherit = permInheritFlag,
                        comment = comment)
-        return True
+        changed = True
 
-    return False
+    if (path is not None and existing_fileset.state == "Unlinked"):
+        Fileset.link(filesystem, name, path)
+        changed = True
+
+    if (path is not None and existing_fileset.state == "Linked"):
+        Fileset.unlink(filesystem, name)
+        Fileset.link(filesystem, name, path)
+        changed = True
+
+    return changed
 
 def main():
     module = AnsibleModule(argument_spec=argument_spec(),
