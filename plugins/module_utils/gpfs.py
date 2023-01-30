@@ -74,7 +74,7 @@ class FS:
 class Fileset:
 
     @staticmethod
-    def create(cls, filesystem, name, 
+    def create(filesystem, name, 
         allow_permission_change = "chmodAndSetAcl",
         allow_permission_inherit = "inheritAclOnly",
         comment = None):
