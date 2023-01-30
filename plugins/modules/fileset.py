@@ -65,11 +65,11 @@ def ensure(module, existing_fileset):
                        comment = comment)
         changed = True
 
-    if (path is not None and existing_fileset.state == "Unlinked"):
+    if (path is not None and existing_fileset.status == "Unlinked"):
         Fileset.link(filesystem, name, path)
         changed = True
 
-    if (path is not None and existing_fileset.state == "Linked"):
+    if (path is not None and existing_fileset.status == "Linked"):
         Fileset.unlink(filesystem, name)
         Fileset.link(filesystem, name, path)
         changed = True
