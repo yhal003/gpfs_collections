@@ -73,16 +73,16 @@ class FS:
 
 class Fileset:
     def __init__(self, filesystem, name):
-        mmlsfs = subprocess.run(["/usr/lpp/mmfs/bin/mmlsfileset",
+        mmlsfileset = subprocess.run(["/usr/lpp/mmfs/bin/mmlsfileset",
                                  filesystem,name,"-Y"],
                                 check=False, 
                                 stdout = subprocess.PIPE,
                                 stderr = subprocess.PIPE)
-        properties = text2table(mmlsfs.stdout.decode())[""]
-        for (k,v) in properies[""].items():
+        properties = text2table(mmlsfileset.stdout.decode())[""]
+        for (k,v) in properies.items():
             try:
                 v = int(v)
             except ValueError:
                 pass
             setattr(self,k,v)
-            
+
