@@ -24,7 +24,7 @@ def main():
                           supports_check_mode=True)
     name = module.params["name"]
     try:
-        module.exit_json(changed=False, fs_info = FS(name)._dict_)
+        module.exit_json(changed=False, fs_info = FS(name).__dict__)
     except IndexError:
         module.fail_json(msg=f"filesystem {name} not found",
                          exception = traceback.format_exc())
