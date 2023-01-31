@@ -91,3 +91,7 @@ special:everyone@:r---:allow:FileInherit:DirInherit
 def test_nfs_acl2():
     acl = NFSv4ACL(ACL2)
     assert len(acl.entries) == 2
+
+def test_empty_acl():
+    acl = NFSv4ACL("")
+    assert len(acl.entries) == 0
