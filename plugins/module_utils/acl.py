@@ -72,7 +72,7 @@ def write_nfsv4_spec(spec_obj):
     result += f"{spec_obj.audience}:"
     result += f"{spec_obj.unix}:"
     result += f"{spec_obj.type}:"
-    result += ":".join(result.flags)
+    result += ":".join(spec_obj.flags)
     return result
 
 class NFSv4ACL:
