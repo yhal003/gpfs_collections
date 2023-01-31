@@ -2,6 +2,18 @@ import re
 from types import SimpleNamespace
 import subprocess
 
+NFSv4_PERMISSIONS=["READ/LIST", "WRITE/CREATE",
+                   "APPEND/MKDIR", "SYNCHRONIZE",
+                   "READ_ACL", "READ_ATTR", "READ_NAMED",
+                   "DELETE", "DELETE_CHILD", "CHOWN",
+                   "EXEC/SEARCH", "WRITE_ACL", "WRITE_ATTR",
+                   "WRITE_NAMED"]
+
+NFSv4_YES = { permission: True  for permission in NFSv4_PERMISSIONS }
+NFSv4_NO  = { permission: False for permission in NFSv4_PERMISSIONS }
+
+NFSv4_HEADER = "#NFSv4 ACL\n"
+
 def read_nfsv4_entry(entry):
     result = {}
     perms = entry.split()
@@ -15,17 +27,16 @@ def read_nfsv4_entry(entry):
             result[perm_name] = False
     return result
 
-NFSv4_PERMISSIONS=["READ/LIST", "WRITE/CREATE",
-                   "APPEND/MKDIR", "SYNCHRONIZE",
-                   "READ_ACL", "READ_ATTR", "READ_NAMED",
-                   "DELETE", "DELETE_CHILD", "CHOWN",
-                   "EXEC/SEARCH", "WRITE_ACL", "WRITE_ATTR",
-                   "WRITE_NAMED"]
-
-NFSv4_YES = { permission: True  for permission in NFSv4_PERMISSIONS }
-NFSv4_NO  = { permission: False for permission in NFSv4_PERMISSIONS }
-
-NFSv4_HEADER = "#NFSv4 ACL\n"
+def write_nfsv4_entry(entry_obj):
+    result = ""
+    for p in NFSv4_PERMISSIONS:
+        value = "X" if entry_obj[p] else "-"
+        result += f"({value}){p}"
+        if p == "READ_NAMED":
+            result += "\n"
+        elif p != "WRITE_NAMED":
+            result += " "
+    return result
 
 def yes_except(permissions):
     result = NFSv4_YES.copy()
@@ -55,6 +66,15 @@ def read_nfsv4_spec(spec):
     result.flags = set(values[4:])
     return result
 
+def write_nfsv4_spec(spec_obj):
+    result = ""
+    result += f"{spec_obj.audience_type}:"
+    result += f"{spec_obj.audience}:"
+    result += f"{spec_obj.unix}:"
+    result += f"{spec_obj.type}:"
+    result += ":".join(result.flags)
+    return result
+
 class NFSv4ACL:
 
     @staticmethod
@@ -64,7 +84,11 @@ class NFSv4ACL:
                                    check = True,
                                    stdout = subprocess.PIPE,
                                    stderr = subprocess.PIPE)
-        return NFSv4ACL(acl_proc.stdout.decode()) 
+        return NFSv4ACL(acl_proc.stdout.decode())
+
+    @staticmethod
+    def putacl(acl, filename):
+        pass
 
     def __init__(self, acl_string):
         self.entries = []
@@ -79,3 +103,11 @@ class NFSv4ACL:
                 entry.spec = read_nfsv4_spec(content_lines[0])
                 entry.permissions = read_nfsv4_entry(" ".join(content_lines[1:]))
             self.entries += [entry]
+    
+    def __repr__(self):
+        repr = NFSv4_HEADER + "\n"
+        for entry in self.entries:
+            repr += write_nfsv4_spec(entry.spec) + "\n"
+            repr += write_nfsv4_entry(entry.permissions) + "\n"
+            repr += "\n"
+        return repr

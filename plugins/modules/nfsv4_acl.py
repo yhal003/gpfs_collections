@@ -26,7 +26,7 @@ def main():
     
     path = module.params["path"]
     existing_acl = NFSv4ACL.getacl(path)
-    module.exit_json(changed=False, nfsv4_acl = existing_acl.entries)
+    module.exit_json(changed=False, nfsv4_acl = str(existing_acl))
 
 if __name__ == '__main__':
     main()
