@@ -24,7 +24,7 @@ def main():
     module = AnsibleModule(argument_spec=argument_spec(),
                           supports_check_mode=True)
     
-    path = module.params["filename"]
+    path = module.params["path"]
     existing_acl = NFSv4ACL.getacl(path)
     module.exit_json(changed=False, nfsv4_acl = existing_acl.entries)
 
