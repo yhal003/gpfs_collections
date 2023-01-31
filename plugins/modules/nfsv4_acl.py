@@ -53,8 +53,8 @@ def ansible2acl(ansible_acl):
             permissions = no_except(entry["no_except"])
         elif "no_only" in entry:
             permissions = no_only(entry["no_only"])
-        acl_obj.entries += [SimpleNamespace({"spec": spec, 
-                                             "permissions": permissions})]
+        acl_obj.entries += [SimpleNamespace(spec = spec, 
+                                            permissions = permissions)]
     return acl_obj
 
 def spec_eql(spec1, spec2):
