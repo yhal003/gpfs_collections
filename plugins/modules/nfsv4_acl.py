@@ -16,12 +16,12 @@ from ansible_collections.nesi.gpfs.plugins.module_utils.acl import NFSv4ACL
 
 def argument_spec():
     return dict(
-        acls       = dict(type='dict', required=True),
+        acls       = dict(type='list', required=True),
         filename   = dict(type='str', required=True)
     )
 
 def main():
-    module = AnsibleModule(argument_spec=argument_spec(), 
+    module = AnsibleModule(argument_spec=argument_spec(),
                           supports_check_mode=True)
     module.exit_json(changed=False)
 
