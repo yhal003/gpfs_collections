@@ -67,10 +67,14 @@ def read_nfsv4_spec(spec):
     return result
 
 def write_nfsv4_spec(spec_obj):
+    if hasattr(spec_obj, "unix"):
+        unix = spec_obj.unix
+    else:
+        unix = "----"
     result = ""
     result += f"{spec_obj.audience_type}:"
     result += f"{spec_obj.audience}:"
-    result += f"{spec_obj.unix}:"
+    result += f"{unix}:"
     result += f"{spec_obj.type}:"
     result += ":".join(spec_obj.flags)
     return result
