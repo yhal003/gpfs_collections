@@ -109,6 +109,8 @@ def main():
             module.exit_json(changed=False)
         else:
             fset = create_fileset(module)
+            if path is not None:
+                Fileset.link(filesystem, name, path)
             module.exit_json(changed=True, fileset = fset.__dict__)
 
 if __name__ == '__main__':
