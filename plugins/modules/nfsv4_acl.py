@@ -78,7 +78,7 @@ def acl_diff(acl1, acl2):
             if (spec_eql(entry1.spec, entry2.spec) and
                 entry1.permissions == entry2.permissions):
                 found = True
-        if found:
+        if not found:
             diff.entries += [entry1]
     return diff
 
