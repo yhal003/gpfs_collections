@@ -60,7 +60,7 @@ class NFSv4ACL:
     @staticmethod
     def getacl(filename):
         acl_proc = subprocess.run(["/usr/lpp/mmfs/bin/mmgetacl",
-                                   "-k", "nfsv4", filename],
+                                   "-k", "nfs4", filename],
                                    check = True,
                                    stdout = subprocess.PIPE,
                                    stderr = subprocess.PIPE)
