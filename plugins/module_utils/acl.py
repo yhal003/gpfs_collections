@@ -92,7 +92,12 @@ class NFSv4ACL:
 
     @staticmethod
     def putacl(acl, filename):
-        pass
+        acl_proc = subprocess.run(["/usr/lpp/mmfs/bin/mmputacl",
+                                   "-k", "nfs4", filename],
+                                   check = True,
+                                   input = str(acl).encode(),
+                                   stdout = subprocess.PIPE,
+                                   stderr = subprocess.PIPE)
 
     def __init__(self, acl_string):
         self.entries = []

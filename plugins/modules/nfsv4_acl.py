@@ -70,10 +70,10 @@ def acl_diff(acl1, acl2):
     diff = NFSv4ACL("")
     for entry1 in acl1.entries:
         found = False
-        if "InheritOnly" in entry1.spec.flags:
+        if "Inherited" in entry1.spec.flags:
             continue
         for entry2 in acl2.entries:
-            if "InheritOnly" in entry2.spec.flags:
+            if "Inherited" in entry2.spec.flags:
                 continue
             if (spec_eql(entry1.spec, entry2.spec) and
                 entry1.permissions == entry2.permissions):
