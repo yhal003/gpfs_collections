@@ -17,13 +17,16 @@ from ansible_collections.nesi.gpfs.plugins.module_utils.acl import NFSv4ACL
 def argument_spec():
     return dict(
         acls       = dict(type='list', required=True),
-        filename   = dict(type='str', required=True)
+        path   = dict(type='str', required=True)
     )
 
 def main():
     module = AnsibleModule(argument_spec=argument_spec(),
                           supports_check_mode=True)
-    module.exit_json(changed=False)
+    
+    path = module.params["filename"]
+    existing_acl = NFSv4ACL.getacl(path)
+    module.exit_json(changed=False, nfsv4_acl = existing_acl.entries)
 
 if __name__ == '__main__':
     main()
