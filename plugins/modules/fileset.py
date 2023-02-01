@@ -101,8 +101,9 @@ def main():
         if state == "present":
             new_fileset = ensure(module, existing_fileset)
             module.exit_json(changed=new_fileset is not None,
-                             fileset = new_fileset if new_fileset is not None
-                                        else existing_fileset)
+                             fileset = new_fileset.__dict__
+                                       if new_fileset is not None
+                                       else existing_fileset.__dict__)
         else:
             if (unlink and existing_fileset.status == "Linked"):
                 Fileset.unlink(filesystem, name)
