@@ -48,6 +48,10 @@ def create_fileset(module):
                             module.params["allow_permission_inherit"])
 
 def ensure(module, existing_fileset):
+    """
+     ensure the fileset matches the module. 
+     returns None if no changes are made, otherwise returns new fileset
+    """
     permChangeFlag = module.params["allow_permission_change"] 
     permInheritFlag = module.params["allow_permission_inherit"]
     comment = module.params["comment"]
@@ -56,30 +60,29 @@ def ensure(module, existing_fileset):
     path  = module.params.get("path", None)
     unlink = module.params["unlink"]
 
-    changed = False
+    new_fileset = None
     if (permChangeFlag != existing_fileset.permChangeFlag or
         permInheritFlag != existing_fileset.permInheritFlag or
         comment != existing_fileset.comment):
-        Fileset.update(filesystem,
-                       name,
-                       allow_permission_change = permChangeFlag,
-                       allow_permission_inherit = permInheritFlag,
-                       comment = comment)
-        changed = True
+        new_fileset = Fileset.update(filesystem,
+                                     name,
+                                     allow_permission_change = permChangeFlag,
+                                     allow_permission_inherit = permInheritFlag,
+                                     comment = comment)
 
     if (path is not None and existing_fileset.status == "Unlinked"):
-        Fileset.link(filesystem, name, path)
-        changed = True
+        new_fileset = Fileset.link(filesystem, name, path)
 
-    if (path is not None and existing_fileset.status == "Linked"):
+    if (path is not None and 
+        existing_fileset.status == "Linked" and
+        path != existing_fileset.path ):
         Fileset.unlink(filesystem, name)
-        Fileset.link(filesystem, name, path)
-        changed = True
+        new_fileset = Fileset.link(filesystem, name, path)
 
     if (unlink and existing_fileset.status == "Linked"):
-        Fileset.unlink(filesystem, name)
+        new_fileset = Fileset.unlink(filesystem, name)
 
-    return changed
+    return new_fileset
 
 def main():
     module = AnsibleModule(argument_spec=argument_spec(),
@@ -96,8 +99,10 @@ def main():
     try:
         existing_fileset = Fileset(filesystem, name)
         if state == "present":
-            changed = ensure(module, existing_fileset)
-            module.exit_json(changed=changed)
+            new_fileset = ensure(module, existing_fileset)
+            module.exit_json(changed=new_fileset is not None,
+                             fileset = new_fileset if new_fileset is not None
+                                        else existing_fileset)
         else:
             if (unlink and existing_fileset.status == "Linked"):
                 Fileset.unlink(filesystem, name)

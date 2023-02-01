@@ -81,6 +81,7 @@ class Fileset:
                        check = True,
                        stdout = subprocess.PIPE,
                        stderr = subprocess.PIPE)
+        return Fileset(filesystem, name)
     
     @staticmethod
     def unlink(filesystem, name):
@@ -88,7 +89,8 @@ class Fileset:
                        filesystem, name],
                        check = True,
                        stdout = subprocess.PIPE,
-                       stderr = subprocess.PIPE)       
+                       stderr = subprocess.PIPE)
+        return Fileset(filesystem, name)       
 
     @staticmethod
     def delete(filesystem, name):
@@ -162,6 +164,8 @@ class Fileset:
             not_found = f"Fileset named {name} does not exist"
             if not_found in mmlsfileset.stderr.decode():
                 raise IndexError(not_found)
+            else:
+                raise Exception(mmlsfileset.stderr.decode())
         properties = text2table(mmlsfileset.stdout.decode())[""][0]
         for (k,v) in properties.items():
             try:
