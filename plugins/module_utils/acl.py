@@ -225,7 +225,7 @@ class NFSv4_ACL:
         return len(self.acl_list)
 
     def __repr__(self):
-        result = NFSv4_HEADER + "\n"
+        result = NFSv4_ACL.HEADER + "\n"
         for (spec,perms) in self:
             result += repr(spec) + "\n"
             result += repr(perms) + "\n"
