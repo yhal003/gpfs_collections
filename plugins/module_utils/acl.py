@@ -2,7 +2,7 @@ import re
 import subprocess
 from os.path import join
 
-from config import BINARY_PATH
+BINARY_PATH="/usr/lpp/mmfs/bin"
 
 class NFSv4_SyntaxError(ValueError):
     pass

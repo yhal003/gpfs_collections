@@ -3,7 +3,7 @@ from urllib.parse import unquote
 from types import SimpleNamespace
 from os.path import join
 
-from config import BINARY_PATH
+BINARY_PATH="/usr/lpp/mmfs/bin"
 
 def text2table(text):
 
