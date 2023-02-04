@@ -41,7 +41,7 @@ def main():
                            required_one_of=[('file_soft',
                                              'file_hard', 'block_soft','block_hard')],
                           supports_check_mode=True)
-    name = module.params["name"]
+    name = module.params["fileset_name"]
     filesystem = module.params["filesystem"]
     try:
         fset = Fileset(filesystem, name)
