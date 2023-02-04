@@ -1,6 +1,8 @@
 [BASIC]
 good-names=i,j,k,l,v,k,o,p,e
 no-docstring-rgx=^.*test.*_
+ignored-modules=ansible_collections.nesi.gpfs.plugins.module_utils.gpfs
 
 [MESSAGES CONTROL]
-disable=wrong-import-position
+disable=wrong-import-position,missing-function-docstring
+

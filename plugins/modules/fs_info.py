@@ -12,7 +12,7 @@ TODO: Provide return
 
 import traceback
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.nesi.gpfs.plugins.module_utils.gpfs import FS
+from ansible_collections.nesi.gpfs.plugins.module_utils.gpfs import FS # type: ignore pylint:disable=import-error
 
 def argument_spec():
     return dict(
@@ -20,7 +20,7 @@ def argument_spec():
     )
 
 def main():
-    module = AnsibleModule(argument_spec=argument_spec(), 
+    module = AnsibleModule(argument_spec=argument_spec(),
                           supports_check_mode=True)
     name = module.params["name"]
     try:

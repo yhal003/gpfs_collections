@@ -10,10 +10,8 @@ RETURN=r'''
 TODO: Provide return
 '''
 
-import traceback
-from types import SimpleNamespace
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.nesi.gpfs.plugins.module_utils.acl import NFSv4_ACL, NFSv4_PermList, NFSv4_PermSpec
+from ansible_collections.nesi.gpfs.plugins.module_utils.acl import NFSv4_ACL # type: ignore pylint:disable=import-error
 
 def argument_spec():
     return dict(
@@ -24,7 +22,7 @@ def argument_spec():
 def main():
     module = AnsibleModule(argument_spec=argument_spec(),
                           supports_check_mode=True)
-    
+
     path = module.params["path"]
     acl  = module.params["acl"]
     existing_acl = NFSv4_ACL.mmgetacl(path)

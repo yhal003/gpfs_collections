@@ -1,6 +1,9 @@
 import subprocess
 from urllib.parse import unquote
 from types import SimpleNamespace
+from os.path import join
+
+from config import BINARY_PATH
 
 def text2table(text):
 
@@ -26,8 +29,8 @@ def text2table(text):
 
 class Cluster:
     def __init__(self):
-        mmlscluster = subprocess.run(["/usr/lpp/mmfs/bin/mmlscluster", "-Y"],
-                                     check=True, 
+        mmlscluster = subprocess.run([join(BINARY_PATH,"mmlscluster"), "-Y"],
+                                     check=True,
                                      stdout = subprocess.PIPE,
                                      stderr = subprocess.PIPE)
         properties = text2table(mmlscluster.stdout.decode())
@@ -53,11 +56,11 @@ class FS:
             raise ValueError(("'all' is a reserved word "
                               "and cannot be used as filesystem name"))
         self.name = name
-        mmlsfs = subprocess.run(["/usr/lpp/mmfs/bin/mmlsfs",name,"-Y"],
-                                check=False, 
+        mmlsfs = subprocess.run([join(BINARY_PATH,"mmlsfs"),name,"-Y"],
+                                check=False,
                                 stdout = subprocess.PIPE,
                                 stderr = subprocess.PIPE)
-        
+
         if mmlsfs.returncode > 0:
             if "is not known to the GPFS cluster" in mmlsfs.stderr.decode():
                 raise IndexError(f"{name} filesystem not found")
@@ -72,29 +75,68 @@ class FS:
                 value = p["data"]
             setattr(self, key, value)
 
+class FilesetQuota:
+
+    @staticmethod
+    def read(filesystem, fileset_name):
+        mmlsquota = subprocess.run([join(BINARY_PATH,"mmlsquota"), "-Y", "-j",
+                                    fileset_name, filesystem],
+                                     check=True,
+                                     stdout = subprocess.PIPE,
+                                     stderr = subprocess.PIPE)
+        props = text2table(mmlsquota.stdout.decode())
+        quota = FilesetQuota(filesystem, fileset_name)
+        quota.block_soft = int(props["fileset"][0]["blockQuota"])
+        quota.block_hard = int(props["fileset"][0]["blockLimit"])
+        quota.file_soft = int(props["fileset"][0]["filesQuota"])
+        quota.file_soft = int(props["fileset"][0]["filesLimit"])
+
+
+    def __init__(self, filesystem, fileset_name,
+                 block_soft = 0, block_hard = 0,
+                 file_soft = 0, file_hard = 0):
+        self.filesystem = filesystem
+        self.fileset_name = fileset_name
+        self.block_soft = block_soft
+        self.block_hard = block_hard
+        self.file_soft = file_soft
+        self.file_hard = file_hard
+
+    def apply(self):
+        subprocess.run([join(BINARY_PATH,"mmsetquota"),
+                        f"{self.filesystem}:{self.fileset_name}",
+                        "--block",
+                        f"{self.block_soft}K:{self.block_hard}K",
+                        "--files",
+                        f"{self.file_soft}:{self.file_hard}"],
+                        check=True,
+                        stdout = subprocess.PIPE,
+                        stderr = subprocess.PIPE)
+
+
 class Fileset:
 
     @staticmethod
     def link(filesystem, name, path):
-        subprocess.run(["/usr/lpp/mmfs/bin/mmlinkfileset",
+        subprocess.run([join(BINARY_PATH,"mmlinkfileset"),
                        filesystem, name, "-J", path],
                        check = True,
                        stdout = subprocess.PIPE,
                        stderr = subprocess.PIPE)
         return Fileset(filesystem, name)
-    
+
     @staticmethod
     def unlink(filesystem, name):
-        subprocess.run(["/usr/lpp/mmfs/bin/mmunlinkfileset",
+        subprocess.run([join(BINARY_PATH, "mmunlinkfileset"),
                        filesystem, name],
                        check = True,
                        stdout = subprocess.PIPE,
                        stderr = subprocess.PIPE)
-        return Fileset(filesystem, name)       
+        return Fileset(filesystem, name)
 
     @staticmethod
     def delete(filesystem, name):
-        cmd = subprocess.run(["/usr/lpp/mmfs/bin/mmdelfileset",
+        cmd = subprocess.run([join(BINARY_PATH,"mmdelfileset"),
                               filesystem, name],
                              check = False,
                              stdout = subprocess.PIPE,
@@ -105,7 +147,7 @@ class Fileset:
         return
 
     @staticmethod
-    def _create_or_update(executable, filesystem, name, 
+    def _create_or_update(executable, filesystem, name,
         allow_permission_change = "chmodAndSetAcl",
         allow_permission_inherit = "inheritAclOnly",
         comment = None):
@@ -117,23 +159,23 @@ class Fileset:
                     "--allow-permission-inherit", allow_permission_inherit]
         if comment is not None:
             command += ["-t", comment]
-        
-        cmd = subprocess.run(command, 
+
+        cmd = subprocess.run(command,
                              check = False,
                              stdout = subprocess.PIPE,
                              stderr = subprocess.PIPE)
-        
+
         if cmd.returncode > 0:
             raise Exception(cmd.stderr.decode())
         return Fileset(filesystem, name)
 
 
     @staticmethod
-    def create(filesystem, name, 
+    def create(filesystem, name,
         allow_permission_change = "chmodAndSetAcl",
         allow_permission_inherit = "inheritAclOnly",
         comment = None):
-        return Fileset._create_or_update("/usr/lpp/mmfs/bin/mmcrfileset",
+        return Fileset._create_or_update(join(BINARY_PATH, "mmcrfileset"),
                                          filesystem, name,
                                          comment=comment,
                                          allow_permission_change=
@@ -142,11 +184,11 @@ class Fileset:
                                           allow_permission_inherit)
 
     @staticmethod
-    def update(filesystem, name, 
+    def update(filesystem, name,
         allow_permission_change = "chmodAndSetAcl",
         allow_permission_inherit = "inheritAclOnly",
         comment = None):
-        return Fileset._create_or_update("/usr/lpp/mmfs/bin/mmchfileset",
+        return Fileset._create_or_update(join(BINARY_PATH, "mmchfileset"),
                                          filesystem, name,
                                          comment=comment,
                                          allow_permission_change=
@@ -155,11 +197,11 @@ class Fileset:
                                           allow_permission_inherit)
 
     def __init__(self, filesystem, name):
-        mmlsfileset = subprocess.run(["/usr/lpp/mmfs/bin/mmlsfileset",
-                                 filesystem,name,"-Y"],
-                                check=False,
-                                stdout = subprocess.PIPE,
-                                stderr = subprocess.PIPE)
+        mmlsfileset = subprocess.run([join(BINARY_PATH, "mmlsfileset"),
+                                      filesystem,name,"-Y"],
+                                     check=False,
+                                     stdout = subprocess.PIPE,
+                                     stderr = subprocess.PIPE)
         if mmlsfileset.returncode > 0:
             not_found = f"Fileset named {name} does not exist"
             if not_found in mmlsfileset.stderr.decode():

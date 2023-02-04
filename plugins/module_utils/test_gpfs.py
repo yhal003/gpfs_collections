@@ -1,9 +1,11 @@
+"""
+ GPFS module unit tests.
+"""
 import pytest
-from unittest.mock import ANY
 import subprocess
 from gpfs import text2table
 
-# text2table tests 
+# text2table tests
 
 def test_empty():
     i = ""
@@ -40,7 +42,7 @@ def test_ignore_endlines():
          "\n"
          "\n")
     o = text2table(i)
-    assert o == {"header": [{"key":"value"}]}    
+    assert o == {"header": [{"key":"value"}]}
 
 def test_two_rows():
     i = ("command:header:HEADER:key\n"
@@ -72,7 +74,7 @@ def test_two_headers_two_values():
          "command:header2::v12:v22\n")
     o = text2table(i)
     assert o == {"header1": [{"k11": "v11", "k21": "v21"}],
-                 "header2": [{"k12": "v12", "k22": "v22"}] } 
+                 "header2": [{"k12": "v12", "k22": "v22"}] }
 
 def test_two_headers_two_values_different_lengths():
     i = ("command:header1:HEADER:k11:k21\n"
@@ -101,8 +103,8 @@ MMLSFS_HEADER = \
 "mmlsfs::HEADER:version:reserved:reserved:deviceName:fieldName:data:remarks:"
 
 def test_fs_simple(mocker):
+    #type: ignore pylint:disable=no-member
     mocker.patch("subprocess.run")
-    #mocker.patch("subprocess.CompletedProcess")
     mmlsfs_data = ("mmlsfs::0:1:::fs1:minFragmentSize:8192::\n"
                    "mmlsfs::0:1:::fs1:inodeSize:4096::\n")
     subprocess.run.return_value.stdout = bytes(
@@ -117,6 +119,7 @@ def test_fs_simple(mocker):
     assert fs.minFragmentSize == 8192
 
 def test_fs_dont_exist(mocker):
+    #type: ignore pylint:disable=no-member
     mocker.patch("subprocess.run")
     subprocess.run.return_value.returncode = 1
     msg = ("mmlsfs: File system i_dont_exist is not known to the GPFS cluster.\n"
@@ -124,11 +127,11 @@ def test_fs_dont_exist(mocker):
     subprocess.run.return_value.stderr = bytes(msg, "utf-8")
 
     with pytest.raises(IndexError):
-        fs = FS("i_dont_exist")
+        FS("i_dont_exist")
 
 from gpfs import Cluster
 
-
+#pylint:disable=line-too-long
 MMLSCLUSTER_HEADER = """mmlscluster:clusterSummary:HEADER:version:reserved:reserved:clusterName:clusterId:uidDomain:rshPath:rshSudoWrapper:rcpPath:rcpSudoWrapper:repositoryType:primaryServer:secondaryServer:
 mmlscluster:clusterNode:HEADER:version:reserved:reserved:nodeNumber:daemonNodeName:ipAddress:adminNodeName:designation:otherNodeRoles:adminLoginName:otherNodeRolesAlias:
 mmlscluster:cnfsSummary:HEADER:version:reserved:reserved:cnfsSharedRoot:cnfsMoundPort:cnfsNFSDprocs:cnfsReboot:cnfsMonitorEnabled:cnfsGanesha:
@@ -137,9 +140,10 @@ mmlscluster:cesSummary:HEADER:version:reserved:reserved:cesSharedRoot:EnabledSer
 mmlscluster:cesNode:HEADER:version:reserved:reserved:nodeNumber:daemonNodeName:ipAddress:cesGroup:cesState:cesIpList:
 mmlscluster:cloudGatewayNode:HEADER:version:reserved:reserved:nodeNumber:daemonNodeName:
 mmlscluster:commentNode:HEADER:version:reserved:reserved:nodeNumber:daemonNodeName:comment_enc:
-"""
+""" # pylint:disable line-too-long
 
 def test_cluster(mocker):
+    #type: ignore pylint:disable=no-member
     mocker.patch("subprocess.run")
     subprocess.run.return_value.returncode = 0
     mmlscluster_data = ("mmlscluster:clusterSummary:0:1:::name:123:domain:ssh:no:scp:no:CCR:s1:s2:\n"
@@ -162,6 +166,7 @@ from gpfs import Fileset
 MMLSFILESET_HEADER = """mmlsfileset::HEADER:version:reserved:reserved:filesystemName:filesetName:id:rootInode:status:path:parentId:created:inodes:dataInKB:comment:filesetMode:afmTarget:afmState:afmMode:afmFileLookupRefreshInterval:afmFileOpenRefreshInterval:afmDirLookupRefreshInterval:afmDirOpenRefreshInterval:afmAsyncDelay:afmNeedsRecovery:afmExpirationTimeout:afmRPO:afmLastPSnapId:inodeSpace:isInodeSpaceOwner:maxInodes:allocInodes:inodeSpaceMask:afmShowHomeSnapshots:afmNumReadThreads:reserved:afmReadBufferSize:afmWriteBufferSize:afmReadSparseThreshold:afmParallelReadChunkSize:afmParallelReadThreshold:snapId:afmNumFlushThreads:afmPrefetchThreshold:afmEnableAutoEviction:permChangeFlag:afmParallelWriteThreshold:freeInodes:afmNeedsResync:afmParallelWriteChunkSize:afmNumWriteThreads:afmPrimaryID:afmDRState:afmAssociatedPrimaryId:afmDIO:afmGatewayNode:afmIOFlags:afmVerifyDmapi:afmSkipHomeACL:afmSkipHomeMtimeNsec:afmForceCtimeChange:afmSkipResyncRecovery:afmSkipConflictQDrop:afmRefreshAsync:afmParallelMounts:afmRefreshOnce:afmSkipHomeCtimeNsec:afmReaddirOnce:afmResyncVer2:afmSnapUncachedRead:afmFastCreate:afmObjectXattr:afmObjectVHB:afmObjectNoDirectoryObj:afmSkipHomeRefresh:afmObjectGCS:afmObjectUserKeys:afmWriteOnClose:afmObjectSSL:afmObjectACL:afmMUPromoted:afmMUAutoRemove:afmObjFastReaddir:afmObjectBlkIO:preventSnapshotRestore:permInheritFlag:afmIOFlags2:afmRemoteUpdate:falStatus:"""
 
 def test_fileset(mocker):
+    #type: ignore pylint:disable=no-member
     mocker.patch("subprocess.run")
     subprocess.run.return_value.returncode = 0
     mmlsfileset_data = "mmlsfileset::0:1:::fs1:fileset_name:10:65828:Linked:%2Fa%5Fb%2Fc:0:Wed Dec 14 14%3A17%3A55 2022:-:-:fset_name:off:-:-:-:-:-:-:-:-:-:-:-:-:0:0:0:0:0:-:-:-:-:-:-:-:-:0:-:-:-:chmodAndUpdateAcl:-:0:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:no:inheritAclAndAddMode:-:-:default:"
@@ -171,10 +176,11 @@ def test_fileset(mocker):
                                                "utf-8")
     fileset = Fileset("fs","fileset_name")
 
-    assert fileset.filesetName == "fileset_name" 
+    assert fileset.filesetName == "fileset_name"
 
 def test_nonexistent_fileset(mocker):
-    mocker.patch("subprocess.run")  
+    #type: ignore pylint:disable=no-member
+    mocker.patch("subprocess.run")
     subprocess.run.return_value.returncode = 22
     subprocess.run.return_value.stderr = ("Fileset named fset does not exist.\n"
                                            "mmlsfileset: Command failed. Examine previous error messages to determine cause.\n").encode()

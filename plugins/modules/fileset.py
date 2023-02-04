@@ -10,9 +10,8 @@ RETURN=r'''
 TODO: Provide return
 '''
 
-import traceback
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.nesi.gpfs.plugins.module_utils.gpfs import Fileset
+from ansible_collections.nesi.gpfs.plugins.module_utils.gpfs import Fileset # type: ignore
 
 def argument_spec():
     return dict(
@@ -42,18 +41,18 @@ def create_fileset(module):
     return Fileset.create(name = module.params["name"],
                           filesystem = module.params["filesystem"],
                           comment = module.params.get("comment",None),
-                          allow_permission_change = 
+                          allow_permission_change =
                             module.params["allow_permission_change"],
-                          allow_permission_inherit = 
+                          allow_permission_inherit =
                             module.params["allow_permission_inherit"])
 
 def ensure(module, existing_fileset):
     """
-     ensure the fileset matches the module. 
+     ensure the fileset matches the module.
      returns None if no changes are made, otherwise returns new fileset
     """
-    permChangeFlag = module.params["allow_permission_change"] 
-    permInheritFlag = module.params["allow_permission_inherit"]
+    perm_change_flag = module.params["allow_permission_change"]
+    perm_inherit_flag = module.params["allow_permission_inherit"]
     comment = module.params["comment"]
     filesystem = module.params["filesystem"]
     name = module.params["name"]
@@ -61,19 +60,19 @@ def ensure(module, existing_fileset):
     unlink = module.params["unlink"]
 
     new_fileset = None
-    if (permChangeFlag != existing_fileset.permChangeFlag or
-        permInheritFlag != existing_fileset.permInheritFlag or
+    if (perm_change_flag != existing_fileset.permChangeFlag or
+        perm_inherit_flag != existing_fileset.permInheritFlag or
         comment != existing_fileset.comment):
         new_fileset = Fileset.update(filesystem,
                                      name,
-                                     allow_permission_change = permChangeFlag,
-                                     allow_permission_inherit = permInheritFlag,
+                                     allow_permission_change = perm_change_flag,
+                                     allow_permission_inherit = perm_inherit_flag,
                                      comment = comment)
 
     if (path is not None and existing_fileset.status == "Unlinked"):
         new_fileset = Fileset.link(filesystem, name, path)
 
-    if (path is not None and 
+    if (path is not None and
         existing_fileset.status == "Linked" and
         path != existing_fileset.path ):
         Fileset.unlink(filesystem, name)
