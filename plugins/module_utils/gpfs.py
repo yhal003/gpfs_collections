@@ -89,7 +89,7 @@ class FilesetQuota:
         quota.block_soft = int(props["fileset"][0]["blockQuota"])
         quota.block_hard = int(props["fileset"][0]["blockLimit"])
         quota.file_soft = int(props["fileset"][0]["filesQuota"])
-        quota.file_soft = int(props["fileset"][0]["filesLimit"])
+        quota.file_hard = int(props["fileset"][0]["filesLimit"])
         return quota
 
 
