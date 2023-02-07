@@ -22,7 +22,7 @@ options:
     to the first line of ACL entry and one of (yes_except),
     (yes_only), (no_except) and (no_only)
    - See Examples for more details
-   -|
+   - |
     Spectrum Scale NFSv4 ACL syntax is documented at
     https://www.ibm.com/docs/en/spectrum-scale/5.0.2?topic=administration-nfs-v4-acl-syntax
    required: true

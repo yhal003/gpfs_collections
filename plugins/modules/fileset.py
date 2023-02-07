@@ -8,9 +8,60 @@ author: Yuriy Halytskyy (@yhal003)
 short_description: Create or modify Spectrum Scale filesets
 description:
 - Create or modify Spectrum Scale filesets.
+options:
+ name:
+   description:
+   - name of the fileset.
+   required: true
+   type: str
+ filesystem:
+   description:
+   - Spectrum Scale filesystem name.
+   required: true
+   type: str
+ path:
+   description:
+   - Path where to link the fileset to.
+   required: false
+   type: str
+ comment:
+   description:
+   - Comment
+   required: false
+   type: str
+ state:
+   description:
+   - Either present or absent
+   required: false
+   default: present
+   type: str
+ allow_permission_change:
+   description:
+   - TODO
+   required: false
+   type: str
+ allow_permission_inherit:
+   description:
+   - TODO
+   required: false
+   type: str
 '''
 
 EXAMPLES=r'''
+- name: "Create fileset and link it"
+  nesi.gpfs.fileset:
+    name: "fileset_name"
+    filesystem: "fs"
+    state: present
+    comment: "Created From Playbook"
+    path: "/fs/fileset"
+    allow_permission_change: chmodAndUpdateAcl
+    allow_permission_inherit: inheritAclAndAddMode
+- name: Unlink fileset
+  nesi.gpfs.fileset:
+   name: "fileset_name"
+   filesystem: "fs"
+   unlink: true
 '''
 
 RETURN=r'''
