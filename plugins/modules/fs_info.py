@@ -1,18 +1,21 @@
-DOCUMENTATION=r'''
-TODO: Document this module
-'''
-
-EXAMPLES=r'''
-TODO: Provide Examples
-'''
-
-RETURN=r'''
-TODO: Provide return
-'''
-
 import traceback
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.nesi.gpfs.plugins.module_utils.gpfs import FS # type: ignore pylint:disable=import-error
+
+DOCUMENTATION=r'''
+---
+module: fs_info
+author: Yuriy Halytskyy (@yhal003)
+short_description: TODO
+description:
+- TODO
+'''
+
+EXAMPLES=r'''
+'''
+
+RETURN=r'''
+'''
 
 def argument_spec():
     return dict(

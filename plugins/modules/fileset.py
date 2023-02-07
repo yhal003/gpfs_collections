@@ -1,38 +1,40 @@
+from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.nesi.gpfs.plugins.module_utils.gpfs import Fileset  # type: ignore
+
 DOCUMENTATION=r'''
-TODO: Document this module
+---
+module: fileset
+author: Yuriy Halytskyy (@yhal003)
+short_description: Create or modify Spectrum Scale filesets
+description:
+- Create or modify Spectrum Scale filesets.
 '''
 
 EXAMPLES=r'''
-TODO: Provide Examples
 '''
 
 RETURN=r'''
-TODO: Provide return
 '''
 
-from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.nesi.gpfs.plugins.module_utils.gpfs import Fileset # type: ignore
-
 def argument_spec():
-    return dict(
-        name       = dict(type='str', required=True),
-        filesystem = dict(type='str', required=True),
-        path       = dict(type='str', required=False),
-        comment    = dict(type='str', required=False),
-        unlink     = dict(type='bool', default=False),
-        state      = dict(type='str', default='present',
-                          choices=['present', 'absent']),
-        allow_permission_change = dict(type = 'str',
-                                       default = 'chmodAndSetAcl',
-                                       choices = ['chmodAndSetAcl',
-                                                  'setAclOnly',
-                                                  'chmodOnly',
-                                                  'chmodAndUpdateAcl']),
-        allow_permission_inherit = dict(type='str',
-                                        default = 'inheritAclOnly',
-                                        choices = ['inheritAclOnly',
-                                                   'inheritAclAndAddMode'])
-    )
+    return dict(name       =dict(type='str', required=True),
+                filesystem =dict(type='str', required=True),
+                path       =dict(type='str', required=False),
+                comment    =dict(type='str', required=False),
+                unlink     =dict(type='bool', default=False),
+                state      =dict(type='str', default='present',
+                                 choices=['present', 'absent']),
+                allow_permission_change =dict(type    ='str',
+                                              default ='chmodAndSetAcl',
+                                              choices =['chmodAndSetAcl',
+                                                          'setAclOnly',
+                                                          'chmodOnly',
+                                                          'chmodAndUpdateAcl']),
+                allow_permission_inherit = dict(type='str',
+                                                default = 'inheritAclOnly',
+                                                choices = ['inheritAclOnly',
+                                                           'inheritAclAndAddMode'])
+                )
 
 def delete_fileset(module):
     Fileset.delete(module.params["filesystem"], module.params["name"])

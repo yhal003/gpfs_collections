@@ -3,7 +3,7 @@
 """
 import pytest
 import subprocess
-from gpfs import text2table
+from ansible_collections.nesi.gpfs.plugins.module_utils.gpfs import text2table
 
 # text2table tests
 
@@ -93,7 +93,7 @@ def test_headers_without_names():
 
 # filesystem tests
 
-from gpfs import FS
+from ansible_collections.nesi.gpfs.plugins.module_utils.gpfs import FS
 
 def test_fs_reserved_name():
     with pytest.raises(ValueError):
@@ -129,7 +129,7 @@ def test_fs_dont_exist(mocker):
     with pytest.raises(IndexError):
         FS("i_dont_exist")
 
-from gpfs import Cluster
+from ansible_collections.nesi.gpfs.plugins.module_utils.gpfs import Cluster
 
 #pylint:disable=line-too-long
 MMLSCLUSTER_HEADER = """mmlscluster:clusterSummary:HEADER:version:reserved:reserved:clusterName:clusterId:uidDomain:rshPath:rshSudoWrapper:rcpPath:rcpSudoWrapper:repositoryType:primaryServer:secondaryServer:
@@ -161,7 +161,7 @@ def test_cluster(mocker):
 
 # test filesets
 
-from gpfs import Fileset
+from ansible_collections.nesi.gpfs.plugins.module_utils.gpfs import Fileset
 
 MMLSFILESET_HEADER = """mmlsfileset::HEADER:version:reserved:reserved:filesystemName:filesetName:id:rootInode:status:path:parentId:created:inodes:dataInKB:comment:filesetMode:afmTarget:afmState:afmMode:afmFileLookupRefreshInterval:afmFileOpenRefreshInterval:afmDirLookupRefreshInterval:afmDirOpenRefreshInterval:afmAsyncDelay:afmNeedsRecovery:afmExpirationTimeout:afmRPO:afmLastPSnapId:inodeSpace:isInodeSpaceOwner:maxInodes:allocInodes:inodeSpaceMask:afmShowHomeSnapshots:afmNumReadThreads:reserved:afmReadBufferSize:afmWriteBufferSize:afmReadSparseThreshold:afmParallelReadChunkSize:afmParallelReadThreshold:snapId:afmNumFlushThreads:afmPrefetchThreshold:afmEnableAutoEviction:permChangeFlag:afmParallelWriteThreshold:freeInodes:afmNeedsResync:afmParallelWriteChunkSize:afmNumWriteThreads:afmPrimaryID:afmDRState:afmAssociatedPrimaryId:afmDIO:afmGatewayNode:afmIOFlags:afmVerifyDmapi:afmSkipHomeACL:afmSkipHomeMtimeNsec:afmForceCtimeChange:afmSkipResyncRecovery:afmSkipConflictQDrop:afmRefreshAsync:afmParallelMounts:afmRefreshOnce:afmSkipHomeCtimeNsec:afmReaddirOnce:afmResyncVer2:afmSnapUncachedRead:afmFastCreate:afmObjectXattr:afmObjectVHB:afmObjectNoDirectoryObj:afmSkipHomeRefresh:afmObjectGCS:afmObjectUserKeys:afmWriteOnClose:afmObjectSSL:afmObjectACL:afmMUPromoted:afmMUAutoRemove:afmObjFastReaddir:afmObjectBlkIO:preventSnapshotRestore:permInheritFlag:afmIOFlags2:afmRemoteUpdate:falStatus:"""
 

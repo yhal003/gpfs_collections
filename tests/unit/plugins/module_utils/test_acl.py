@@ -1,5 +1,5 @@
 import pytest
-from acl import NFSv4_PermDict, NFSv4_PermSpec, NFSv4_ACL, NFSv4_SyntaxError
+from ansible_collections.nesi.gpfs.plugins.module_utils.acl import NFSv4_PermDict, NFSv4_PermSpec, NFSv4_ACL, NFSv4_SyntaxError #type: ignore
 
 def test_all_yes():
     perm_list = NFSv4_PermDict.yes_all()

@@ -1,17 +1,20 @@
+from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.nesi.gpfs.plugins.module_utils.acl import NFSv4_ACL # type: ignore pylint:disable=import-error
+
 DOCUMENTATION=r'''
-TODO: Document this module
+---
+module: nfsv4_acl
+author: Yuriy Halytskyy (@yhal003)
+short_description: Assign NFSv4 ACLs to files or directories on Spectrum Scale
+description:
+- Assign NFSv4 ACLs to files or directories on Spectrum Scale
 '''
 
 EXAMPLES=r'''
-TODO: Provide Examples
 '''
 
 RETURN=r'''
-TODO: Provide return
 '''
-
-from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.nesi.gpfs.plugins.module_utils.acl import NFSv4_ACL # type: ignore pylint:disable=import-error
 
 def argument_spec():
     return dict(

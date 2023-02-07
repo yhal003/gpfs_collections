@@ -1,13 +1,36 @@
 DOCUMENTATION=r'''
-TODO: Document this module
+---
+module: fileset_info
+author: Yuriy Halytskyy (@yhal003)
+short_description: Provides information about Spectrum Scale fileset
+description:
+- The same output as mmlsfileset -Y provided as a dictionary
+options:
+ name:
+   description:
+   - name of the fileset.
+   required: true
+   type: str
+ filesystem:
+   description:
+   - Spectrum Scale filesystem name.
+   required: true
+   type: str
 '''
 
 EXAMPLES=r'''
-TODO: Provide Examples
+- name: Info for projects fileset
+  nesi.gpfs.fileset_info:
+   filesystem: filesystem1
+   name: projects
+  register: fs_result
 '''
 
 RETURN=r'''
-TODO: Provide return
+fileset_info:
+ description: output of mmlsfileset -Y
+ returned: always
+ type: dict
 '''
 
 import traceback

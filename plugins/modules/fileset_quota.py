@@ -1,18 +1,20 @@
+from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.nesi.gpfs.plugins.module_utils.gpfs import FilesetQuota, Fileset #type: ignore
+
 DOCUMENTATION=r'''
-TODO: Document this module
+---
+module: fileset_quota
+author: Yuriy Halytskyy (@yhal003)
+short_description: TODO
+description:
+- TODO
 '''
 
 EXAMPLES=r'''
-TODO: Provide Examples
 '''
 
 RETURN=r'''
-TODO: Provide return
 '''
-
-import traceback
-from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.nesi.gpfs.plugins.module_utils.gpfs import FilesetQuota, Fileset #type: ignore
 
 def argument_spec():
     return dict(
