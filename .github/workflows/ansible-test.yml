@@ -15,8 +15,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: ansible-community/ansible-test-gh-action@release/v1
     - name: Run ansible unit tests
+      uses: ansible-community/ansible-test-gh-action@release/v1
       with:
         ansible-core-version: stable-2.14
         pre-test-cmd: echo This runs before the ansible-test invocation
