@@ -1,0 +1,27 @@
+name: Ansible Unit Tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: ansible-community/ansible-test-gh-action@release/v1
+    - name: Run ansible unit tests
+      with:
+        ansible-core-version: stable-2.14
+        pre-test-cmd: echo This runs before the ansible-test invocation
+        target-python-version: 3.9
+        testing-type: units
+        test-deps: >-
+          ansible.netcommon
+          ansible.utils
