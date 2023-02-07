@@ -8,12 +8,45 @@ author: Yuriy Halytskyy (@yhal003)
 short_description: Assign NFSv4 ACLs to files or directories on Spectrum Scale
 description:
 - Assign NFSv4 ACLs to files or directories on Spectrum Scale
+options:
+ path:
+   description:
+   - path of a file or a directory on Spectrum Scale filesystem.
+   required: true
+   type: str
+ acl:
+   description:
+   - NFSv4 ACL to be assigned to a file or directory.
+   - |
+    Each list item is a dictionary with (spec) corresponding
+    to the first line of ACL entry and one of (yes_except),
+    (yes_only), (no_except) and (no_only)
+   - See Examples for more details
+   -|
+    Spectrum Scale NFSv4 ACL syntax is documented at
+    https://www.ibm.com/docs/en/spectrum-scale/5.0.2?topic=administration-nfs-v4-acl-syntax
+   required: true
+   type: list
 '''
 
 EXAMPLES=r'''
+ - name: Assign ACL
+   nfsv4_acl:
+    path: /fs/name
+    acl:
+     - spec: "special:owner@:rwxc:allow:FileInherit:DirInherit"
+       yes_except: ["DELETE"]
+     - spec: "special:group@:rwxc:allow:FileInherit:DirInherit"
+       yes_except: ["DELETE"]
+     - spec: "special:everyone@:----:allow:FileInherit:DirInherit"
+       yes_only: ["SYNCHRONIZE",
+                  "READ_ACL", "READ_ATTR", "READ_NAMED"]
+     - spec: "group:agresearch_admins:rwxc:allow:DirInherit"
+        yes_except: ["DELETE"]
 '''
 
 RETURN=r'''
+
 '''
 
 def argument_spec():

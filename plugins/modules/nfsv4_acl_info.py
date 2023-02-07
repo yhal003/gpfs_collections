@@ -8,12 +8,25 @@ author: Yuriy Halytskyy (@yhal003)
 short_description: read NFSv4 ACL from file or directory on Spectrum Scale
 description:
 - read NFSv4 ACL from file or directory on Spectrum Scale
+options:
+ path:
+   description:
+   - path of a file or a directory on Spectrum Scale filesystem.
+   required: true
+   type: str
 '''
 
 EXAMPLES=r'''
+- name: Read home ACL
+   path: /home/user1
+  register: acl
 '''
 
 RETURN=r'''
+nfsv4_acl:
+ description: NFSv4 ACL in Spectrum Scale format
+ returned: always
+ type: str
 '''
 
 def argument_spec():
