@@ -85,11 +85,21 @@ class FilesetQuota:
                                      stdout = subprocess.PIPE,
                                      stderr = subprocess.PIPE)
         props = text2table(mmlsquota.stdout.decode())
+
+        def read_int(p):
+            return int(props["fileset"][0][p])
+
         quota = FilesetQuota(filesystem, fileset_name)
-        quota.block_soft = int(props["fileset"][0]["blockQuota"])
-        quota.block_hard = int(props["fileset"][0]["blockLimit"])
-        quota.file_soft = int(props["fileset"][0]["filesQuota"])
-        quota.file_hard = int(props["fileset"][0]["filesLimit"])
+        quota.block_soft = read_int("blockQuota")
+        quota.block_hard = read_int("blockLimit")
+        quota.file_soft =  read_int("filesQuota")
+        quota.file_hard =  read_int("filesLimit")
+
+        # usage
+        quota.block_usage    = read_int("blockUsage")
+        quota.block_in_doubt = read_int("blockInDoubt")
+        quota.file_usage     = read_int("filesUsage")
+        quota.file_in_doubt  = read_int("filesInDoubt")
         return quota
 
 
@@ -102,6 +112,11 @@ class FilesetQuota:
         self.block_hard = block_hard
         self.file_soft = file_soft
         self.file_hard = file_hard
+
+        self.block_usage = 0
+        self.block_in_doubt = 0
+        self.file_usage = 0
+        self.file_in_doubt = 0
 
     def apply(self):
         subprocess.run([join(BINARY_PATH,"mmsetquota"),
