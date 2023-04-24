@@ -48,6 +48,29 @@ options:
 '''
 
 EXAMPLES=r'''
+- name: Create fileset
+    nesi.gpfs.fileset:
+    filesystem: fs
+    name: test_playbook
+    state: present
+- name: Update fileset
+    nesi.gpfs.fileset:
+    filesystem: fs
+    name: test_playbook
+    state: present
+    comment: "I updated a fileset!"
+- name: Link fileset
+    nesi.gpfs.fileset:
+    filesystem: fs
+    name: test_playbook
+    state: present
+    path: "/fs/test_playbook"
+- name: Re-link fileset
+    nesi.gpfs.fileset:
+    filesystem: fs
+    name: test_playbook
+    state: present
+    path: "/fs/test_playbook_different"
 - name: "Create fileset and link it"
   nesi.gpfs.fileset:
     name: "fileset_name"

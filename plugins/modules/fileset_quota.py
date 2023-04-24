@@ -52,25 +52,25 @@ def main():
     quota = FilesetQuota.read(filesystem, name)
     changed = False
     changed_dict = {}
-    if "file_soft" in module.params:
+    if module.params["file_soft"] is not None:
         file_soft = module.params["file_soft"]
         if quota.file_soft != file_soft:
             changed = True
             changed_dict["file_soft"] = (quota.file_soft, file_soft)
             quota.file_soft = file_soft
-    if "file_hard" in module.params:
+    if module.params["file_hard"] is not None:
         file_hard = module.params["file_hard"]
         if quota.file_hard != file_hard:
             changed = True
             changed_dict["file_hard"] = (quota.file_hard, file_hard)
             quota.file_hard = file_hard
-    if "block_soft" in module.params:
+    if module.params["block_soft"] is not None:
         block_soft = to_kb(module.params["block_soft"])
         if quota.block_soft != block_soft:
             changed = True
             changed_dict["block_soft"] = (quota.block_soft, block_soft)
             quota.block_soft = block_soft
-    if "block_hard" in module.params:
+    if module.params["block_hard"] is not None:
         block_hard = to_kb(module.params["block_hard"])
         if quota.block_hard != block_hard:
             changed = True
