@@ -34,3 +34,6 @@ def main():
     quota = FilesetQuota.read(filesystem, name)
     module.exit_json(changed=False,
                      fileset_quota_info = quota.__dict__)
+
+if __name__ == '__main__':
+    main()
